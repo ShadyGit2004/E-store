@@ -109,7 +109,7 @@ const Product = () => {
         </select>
         
         {(products.length > 0) && products.length + " Products"}
-          <div className="flex flex-wrap gap-2">{products}</div>
+          <div className="flex flex-wrap gap-2">{products?.length ? products : "No Products" }</div>
           {(prodCount >= limit) && <button className = "cursor-pointer border border-gray-400 text-2xl px-4 py-2 reounded" onClick={()=>{fetchProducts(limit, productCategory, nextCursor?.cursorUpdatedAt, nextCursor?.cursorId)}}>Load products</button>}
         </div>
       ) : ("Loading...")}
