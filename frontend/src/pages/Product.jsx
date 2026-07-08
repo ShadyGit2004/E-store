@@ -29,12 +29,9 @@ const Product = () => {
   async function fetchProducts(limit = 20, type="", cursorUpdatedAt="", cursorId="") {
     console.log(limit , type, cursorUpdatedAt, cursorId)
     const {data} = await axios.get(`/products?limit=${limit}&category=${type}&cursorUpdatedAt=${cursorUpdatedAt}&cursorId=${cursorId}`)
-    // setProducts((prev) => [...prev, ...data?.products?.map((p)=>        
-    //   <ProductCard key={p._id} details={p} />
-    // )])  
-    setProducts(data?.products?.map((p)=>        
+    setProducts((prev) => [...prev, ...data?.products?.map((p)=>        
       <ProductCard key={p._id} details={p} deleteProduct={handleDelete} userRole={user?.role} />
-    ))   
+    )])        
     setNextCursor(data?.nextCursor)
   }
 
