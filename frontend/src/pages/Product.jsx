@@ -10,6 +10,8 @@ const Product = () => {
   const {user} = useContext(DataContext)
 
   const categoryArr = ["Electronics", "Books","Clothing","Sports","Home"]
+  const [prodCount, setprodCount] = useState(0)
+  const [limit, setLimit] = useState(2)
   const [products, setProducts] = useState([])
   const [nextCursor, setNextCursor] = useState({})
   const [productCategory, setProductCategory] = useState("")
@@ -26,30 +28,29 @@ const Product = () => {
     }
   }
  
-  async function fetchProducts(limit = 20, type="", cursorUpdatedAt="", cursorId="") {
-    
+  async function fetchProducts(lmt = limit, type="", cursorUpdatedAt="", cursorId="") {    
       // console.log(limit , type, cursorUpdatedAt, cursorId)      
       // console.log(products, nextCursor?.cursorId, products[products?.length-1]?.key)      
       // console.log((nextCursor?.cursorId != undefined  && products != undefined) && nextCursor?.cursorId === products[products?.length-1]?.key)      
       // if((nextCursor?.cursorId != undefined  && products != undefined) && nextCursor?.cursorId === products[products?.length-1]?.key){
       //     return console.log('no data')
       // } 
-      const {data} = await axios.get(`/products?limit=${limit}&category=${type}&cursorUpdatedAt=${cursorUpdatedAt}&cursorId=${cursorId}`) 
+      const {data} = await axios.get(`/products?limit=${lmt}&category=${type}&cursorUpdatedAt=${cursorUpdatedAt}&cursorId=${cursorId}`) 
 
       if(data.count){
         setProducts((prev) => [...prev, ...data?.products?.map((p)=>        
           <ProductCard key={p._id} details={p} deleteProduct={handleDelete} userRole={user?.role} />
-        )])
-        console.log(data)         
+        )])     
         setNextCursor(data?.nextCursor)
       }  
-  } 
+      setprodCount(data.count)  
+    } 
 
   function handleCategory(e) {
     const value = e.target.value  
     setProductCategory(value)
     setProducts([]);
-    fetchProducts(20, value);
+    fetchProducts(limit, value);
   }
 
   useEffect(() => {
@@ -101,6 +102,7 @@ const Product = () => {
       {products ?
       (<div > 
         <select onChange={(e)=>{handleCategory(e)}} className="px-3 py-0.5 cursor-pointer block border my-3 text-2xl text-white bg-blue-800">
+        <option value="">All</option>
         {categoryArr.map((c, idx)=>
           <option key={idx} value={c}>{c}</option>
         )}
@@ -108,7 +110,7 @@ const Product = () => {
         
         {(products.length > 0) && products.length + " Products"}
           <div className="flex flex-wrap gap-2">{products}</div>
-          {products.length && <button className = "cursor-pointer border border-gray-400 text-2xl px-4 py-2 reounded" onClick={()=>{fetchProducts(20, productCategory, nextCursor?.cursorUpdatedAt, nextCursor?.cursorId)}}>Load products</button>}
+          {(prodCount >= limit) && <button className = "cursor-pointer border border-gray-400 text-2xl px-4 py-2 reounded" onClick={()=>{fetchProducts(limit, productCategory, nextCursor?.cursorUpdatedAt, nextCursor?.cursorId)}}>Load products</button>}
         </div>
       ) : ("Loading...")}
 
