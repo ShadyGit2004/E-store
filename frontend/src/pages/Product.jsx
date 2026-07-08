@@ -26,14 +26,24 @@ const Product = () => {
     }
   }
  
-  async function fetchProducts(limit = 20, type="", cursorUpdatedAt="", cursorId="") {
-    console.log(limit , type, cursorUpdatedAt, cursorId)
-    const {data} = await axios.get(`/products?limit=${limit}&category=${type}&cursorUpdatedAt=${cursorUpdatedAt}&cursorId=${cursorId}`)
-    setProducts((prev) => [...prev, ...data?.products?.map((p)=>        
-      <ProductCard key={p._id} details={p} deleteProduct={handleDelete} userRole={user?.role} />
-    )])        
-    setNextCursor(data?.nextCursor)
-  }
+  async function fetchProducts(limit = 2, type="", cursorUpdatedAt="", cursorId="") {
+    
+      // console.log(limit , type, cursorUpdatedAt, cursorId)      
+      // console.log(products, nextCursor?.cursorId, products[products?.length-1]?.key)      
+      // console.log((nextCursor?.cursorId != undefined  && products != undefined) && nextCursor?.cursorId === products[products?.length-1]?.key)      
+      // if((nextCursor?.cursorId != undefined  && products != undefined) && nextCursor?.cursorId === products[products?.length-1]?.key){
+      //     return console.log('no data')
+      // } 
+      const {data} = await axios.get(`/products?limit=${limit}&category=${type}&cursorUpdatedAt=${cursorUpdatedAt}&cursorId=${cursorId}`) 
+
+      if(data.count){
+        setProducts((prev) => [...prev, ...data?.products?.map((p)=>        
+          <ProductCard key={p._id} details={p} deleteProduct={handleDelete} userRole={user?.role} />
+        )])
+        console.log(data)         
+        setNextCursor(data?.nextCursor)
+      }  
+  } 
 
   function handleCategory(e) {
     const value = e.target.value  
@@ -98,7 +108,7 @@ const Product = () => {
         
         {(products.length > 0) && products.length + " Products"}
           <div className="flex flex-wrap gap-2">{products}</div>
-          <button className = "cursor-pointer border border-gray-400 text-2xl px-4 py-2 reounded" onClick={()=>{fetchProducts(20, productCategory, nextCursor?.cursorUpdatedAt, nextCursor?.cursorId)}}>Load products</button>
+          {products.length && <button className = "cursor-pointer border border-gray-400 text-2xl px-4 py-2 reounded" onClick={()=>{fetchProducts(20, productCategory, nextCursor?.cursorUpdatedAt, nextCursor?.cursorId)}}>Load products</button>}
         </div>
       ) : ("Loading...")}
 
