@@ -26,7 +26,7 @@ const Product = () => {
     }
   }
  
-  async function fetchProducts(limit = 2, type="", cursorUpdatedAt="", cursorId="") {
+  async function fetchProducts(limit = 20, type="", cursorUpdatedAt="", cursorId="") {
     
       // console.log(limit , type, cursorUpdatedAt, cursorId)      
       // console.log(products, nextCursor?.cursorId, products[products?.length-1]?.key)      
